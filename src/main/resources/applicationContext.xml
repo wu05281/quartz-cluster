@@ -25,7 +25,8 @@
 	<bean id="cronTriggerBean"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="jobDetail"></property>
-		<property name="cronExpression" value="* * * * * ?"></property>
+<!-- 		在每天下午6点到下午6:55期间的每5分钟触发  -->
+		<property name="cronExpression" value="0 * 18 * * ?"></property>
 	</bean>
 
 	<bean id="trigger"

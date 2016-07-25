@@ -16,7 +16,7 @@ public class QueryJob extends QuartzJobBean{
 	
 	public void query(){
 		i++;
-		log.info(" log :"+  i + "，时间 :" +new Date());
+		log.info("XXX log :"+  i + "，时间 :" +new Date());
 	}
 
 	@Override
