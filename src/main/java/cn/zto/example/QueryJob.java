@@ -2,13 +2,12 @@ package cn.zto.example;
 
 import java.util.Date;
 
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.stereotype.Component;
 
-public class QueryJob extends QuartzJobBean{
+@Component 
+public class QueryJob {
 	
 	private static int i = 0;
 	
@@ -19,8 +18,4 @@ public class QueryJob extends QuartzJobBean{
 		log.info("XXX log :"+  i + "£¬Ê±¼ä :" +new Date());
 	}
 
-	@Override
-	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-		query();
-	}
 }
