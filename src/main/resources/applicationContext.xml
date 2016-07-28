@@ -14,50 +14,48 @@
             http://www.springframework.org/schema/task/spring-task-4.0.xsd">
 
 	<context:annotation-config />
-
-	<!-- 注册调度任务 -->  
-    <bean id="mapScheduler" lazy-init="false" autowire="no"   
-             class="org.springframework.scheduling.quartz.SchedulerFactoryBean" destroy-method="destroy">  
-         <!--可选，QuartzScheduler 启动时更新己存在的Job，这样就不用每次修改targetObject后删除qrtz_job_details表对应记录了 -->    
-        <property name="overwriteExistingJobs" value="true" />    
-         <!--必须的，QuartzScheduler 延时启动，应用启动完后 QuartzScheduler 再启动 -->  
-        <property name="startupDelay" value="30" />  
-        <!-- 设置自动启动 -->  
-        <property name="autoStartup" value="true" />  
-        <property name="triggers">  
-                <list>  
-                     <ref bean="createTableShelvesTrigger" />  
-                </list>  
-        </property>  
-        <property name="applicationContextSchedulerContextKey" value="applicationContext" />  
-        <property name="configLocation" value="classpath:quartz.properties" />  
-    </bean>  
-      
-    <!-- 配置处理日志任务 -->  
-    <bean name="queryJob" class="cn.zto.example.QueryJob"></bean>  
-    <!-- 动态创建日志记录表 -->  
-      
-    <bean id="createTableShelvesInvokingJob"  
-          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">  
-          <!-- durability 表示任务完成之后是否依然保留到数据库，默认false   -->  
-         <property name="durability" value="true" />  
-         <property name="requestsRecovery" value="true" />     
-         <property name="jobClass">  
-                <value>cn.zto.example.MyDetailQuartzJobBean</value>  
-        </property>  
-       <property name="jobDataAsMap">  
-             <map>  
-                  <entry key="targetObject" value="queryJob" />  
-                  <entry key="targetMethod" value="query" />  
-            </map>  
-        </property>  
-    </bean>  
-      
-    <!-- 定期动态创建数据表 -->  
-    <bean id="createTableShelvesTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
-        <property name="jobDetail" ref="createTableShelvesInvokingJob"/>  
-        <!-- 每月最后一天的23:55分执行任务 -->  
-         <property name="cronExpression" value="0 55 23 L * ?"/>  
-    </bean>  
-      
+	<!-- 配置处理日志任务 -->
+	<bean name="queryJob" class="cn.zto.example.QueryJob"></bean>
+	
+	<bean id="vcaEventJobTask" class="org.springframework.scheduling.quartz.JobDetailFactoryBean"> 
+        <property name="jobClass"> 
+            <!-- 上面的任务代理类 --> 
+            <value>cn.zto.example.MyDetailQuartzJobBean</value> 
+        </property> 
+        <property name="jobDataAsMap"> 
+            <map> 
+                <!-- 实际的任务的Bean name，填上EventMonitorService的Bean name --> 
+                <entry key="targetObject" value="queryJob" />
+				<entry key="targetMethod" value="query" />
+            </map> 
+        </property> 
+        <property name="durability" value="true"></property>  
+    </bean> 
+  
+    <!-- 任务触发器 --> 
+    <bean id="eventTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"> 
+        <property name="jobDetail"> 
+            <!-- 任务代理Bean name --> 
+            <ref bean="vcaEventJobTask" /> 
+        </property> 
+        <property name="cronExpression"> 
+            <!-- 配置表达式，这里表示每五分钟执行一次 --> 
+            <value>0 0/1 * * * ?</value> 
+        </property> 
+    </bean> 
+    <!-- 任务调度入口 --> 
+    <bean autowire="no" 
+        class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> 
+        <!-- 任务列表，可以配置多个任务加入到该List --> 
+        <property name="triggers"> 
+            <list> 
+               <ref bean="eventTaskTrigger"/>   
+            </list> 
+        </property> 
+        <property name="configLocation" value="classpath:quartz.properties" /> 
+        <property name="applicationContextSchedulerContextKey" value="applicationContext" /> 
+        <property name="startupDelay" value="30" /> 
+        <property name="autoStartup" value="true" /> 
+        <property name="overwriteExistingJobs" value="true" /> 
+    </bean> 
 </beans>  

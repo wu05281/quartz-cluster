@@ -14,36 +14,64 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  * 
  */  
 public class MyDetailQuartzJobBean extends QuartzJobBean{  
-    private String targetObject;    
-    private String targetMethod;    
-    private ApplicationContext ctx;   
-    @Override  
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {  
-     try {    
-            //LogUtils.Log("execute [" + targetObject + "] at once>>>>>>");  
-            Object otargetObject = ctx.getBean(targetObject);    
-            Method m = null;    
-            try {  
-                m = otargetObject.getClass().getMethod(targetMethod, new Class[] {JobExecutionContext.class}); //方法中的参数是JobExecutionContext类型  
-                m.invoke(otargetObject, new Object[] {context});   
-            } catch (SecurityException e) {    
-               e.printStackTrace();  
-            } catch (NoSuchMethodException e) {    
-                e.printStackTrace();  
-            }    
-        } catch (Exception e) {    
-            throw new JobExecutionException(e);    
-        }    
-    }  
-    public void setApplicationContext(ApplicationContext applicationContext) {    
-        this.ctx = applicationContext;    
-    }    
-    
-    public void setTargetObject(String targetObject) {    
-        this.targetObject = targetObject;    
-    }    
-    
-    public void setTargetMethod(String targetMethod) {    
-        this.targetMethod = targetMethod;    
-    }    
+	
+	private ApplicationContext applicationContext;   
+
+	private String targetObject; 
+
+	private String targetMethod; 
+
+	public String getTargetObject() { 
+		return targetObject; 
+	} 
+
+
+	public void setTargetObject(String targetObject) { 
+		this.targetObject = targetObject; 
+	} 
+
+	public String getTargetMethod() { 
+		return targetMethod; 
+	} 
+
+	public void setTargetMethod(String targetMethod) { 
+		this.targetMethod = targetMethod; 
+	} 
+
+
+	public ApplicationContext getApplicationContext() {  
+		return applicationContext; 
+	} 
+
+	/** 
+	 * 从SchedulerFactoryBean注入的applicationContext. 
+	 */   
+	public void setApplicationContext(ApplicationContext applicationContext) {   
+		this.applicationContext = applicationContext;   
+	}   
+
+	@Override   
+	protected void executeInternal(JobExecutionContext ctx) 
+			throws JobExecutionException { 
+		try { 
+
+
+			// logger.info("execute [" + targetObject + "] at once>>>>>>"); 
+			Object otargetObject = applicationContext.getBean(targetObject); 
+			Method m = null; 
+			try { 
+				m = otargetObject.getClass().getMethod(targetMethod, 
+						new Class[] {}); 
+				m.invoke(otargetObject, new Object[] {}); 
+			} catch (SecurityException e) { 
+				// logger.error(e); 
+			} catch (NoSuchMethodException e) { 
+				// logger.error(e); 
+			} 
+
+
+		} catch (Exception e) { 
+			throw new JobExecutionException(e); 
+		} 
+	} 
 }  
