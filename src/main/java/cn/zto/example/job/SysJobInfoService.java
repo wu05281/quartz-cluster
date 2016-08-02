@@ -32,7 +32,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import cn.zto.example.dao.base.BaseDao;
+import cn.zto.example.dao.base.BaseDao4Quartz;
 import cn.zto.example.model.SysJobInfo;
 
 /**
@@ -50,7 +50,7 @@ public class SysJobInfoService {
 	private SchedulerFactoryBean schedulerFactoryBean;
 
 	@Autowired
-	private BaseDao baseDao;
+	private BaseDao4Quartz baseDao;
 	
 	@Resource(name="sf_quartz")
 	private SessionFactory sessionFactory;

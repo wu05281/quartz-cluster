@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public interface BaseDao {
+public interface BaseDao4Quartz {
 	void flush();
 
 	void clear();

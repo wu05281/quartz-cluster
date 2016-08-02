@@ -13,10 +13,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
-import cn.zto.example.dao.base.BaseDao;
+import cn.zto.example.dao.base.BaseDao4Quartz;
 
 @Repository("baseDao")
-public class BaseDaoImpl implements BaseDao{
+public class BaseDao4QuartzImpl implements BaseDao4Quartz{
 	@Resource(name = "sf_quartz")
 	private SessionFactory sessionFactory;
 
